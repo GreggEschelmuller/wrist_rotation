@@ -80,13 +80,14 @@ def trial_counter(time):
 rot_mat = [[np.cos(np.pi/4), -np.cos(np.pi/4)],
            [np.sin(np.pi/4), np.cos(np.pi/4)]]
 
-# ---------- Main Experiment Run -----------------------------------------------------------------------------
+# ---------- Main Experiment Run ------------------------------------
+# read data from xls file
 trials = read_trial_data('Trials.xls', 0)
 # Create your Phidget channels
 ch0 = config_channel(0, 1000)
 ch1 = config_channel(1, 1000)
 
-
+# Creates window
 mywin = visual.Window(fullscr=True, monitor='testMonitor',
                       units='pix', color='black')
 
@@ -140,6 +141,8 @@ ch0.close()
 ch1.close()
 
 # ------ Analysis and Saving--------------------
+# To do: update output data to include all trial data
+# Merge input df with output df
 final_angles = [(np.arctan(final_positions[i][1]/final_positions[i][0])) * (180/np.pi)
                 for i in range(len(final_positions))]
 output_data = pd.DataFrame()

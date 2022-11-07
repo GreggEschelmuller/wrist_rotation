@@ -70,7 +70,7 @@ def calc_amplitude(pos):
 rot_mat = [[np.cos(np.pi/4), -np.cos(np.pi/4)],
            [np.sin(np.pi/4), np.cos(np.pi/4)]]
 
-# ---------- Main Experiment Run -----------------------------------------------------------------------------
+# ---------- Main Experiment Run -------------------------------------------------
 # Create your Phidget channels
 ch0 = config_channel(0, 100)
 ch1 = config_channel(1, 100)
