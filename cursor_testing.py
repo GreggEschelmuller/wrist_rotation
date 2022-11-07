@@ -12,7 +12,8 @@ cursor_size = 0.2
 target_size = 0.3
 home_size = 0.3
 timeLimit = 3
-max_volt = 4.5
+max_volt = 5
+gain = 200
 
 
 def cm_to_pixel(cm):
@@ -37,12 +38,13 @@ def config_channel(ch_num, fs):
 
 
 def get_pos(ch0, ch1, rot_mat):
-    button1 = ch0.getVoltage()/max_volt
-    button2 = ch1.getVoltage()/max_volt
+    button1 = (ch0.getVoltage() - 5/2)
+    button2 = (5-ch1.getVoltage() - 5/3)
     # To do: play around with normalization
-    button1 *= (button1*300)
-    button2 *= (button2*300)
-    return np.matmul(rot_mat, [(button2)-cm_to_pixel(1), (button1)-cm_to_pixel(1)])
+    button1 *= gain
+    button2 *= gain
+    # return [button1, button2]
+    return np.matmul(rot_mat, [(button1), (button2)])
 
 
 def update_pos(pos, circ):
@@ -67,16 +69,17 @@ def calc_amplitude(pos):
 
 
 # define rotation matrix for integrated cursor
-rot_mat = [[np.cos(np.pi/4), -np.cos(np.pi/4)],
+rot_mat = [[np.cos(np.pi/4), -np.sin(np.pi/4)],
            [np.sin(np.pi/4), np.cos(np.pi/4)]]
 
 # ---------- Main Experiment Run -------------------------------------------------
 # Create your Phidget channels
-ch0 = config_channel(0, 100)
-ch1 = config_channel(1, 100)
+ch0 = config_channel(1, 100)
+ch1 = config_channel(2, 100)
 
 # Do stuff with your Phidgets here or in your event handlers.
-mywin = visual.Window([1200, 800], monitor='testMonitor', units='pix')
+mywin = visual.Window(fullscr=True, monitor='testMonitor',
+                      units='pix', color='black')
 
 
 int_cursor = visual.Circle(
@@ -90,8 +93,6 @@ while True:
     update_pos(get_pos(ch0, ch1, rot_mat), int_cursor)
     mywin.flip()
     home.draw()
-    print(str(round(int_cursor.pos[0])) + ' ' + str(round(int_cursor.pos[0])
-                                                    ) + ' + ' + str(round(home.pos[0])) + ' ' + str(round(home.pos[1])))
 
     # stop if button press
     if len(event.getKeys()) > 0:

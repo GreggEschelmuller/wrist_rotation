@@ -15,6 +15,7 @@ target_size = 0.3
 home_size = 0.3
 timeLimit = 3
 max_volt = 4.5
+gain = 200
 
 
 def cm_to_pixel(cm):
@@ -39,12 +40,12 @@ def config_channel(ch_num, fs):
 
 
 def get_pos(ch0, ch1, rot_mat):
-    button1 = ch0.getVoltage()/max_volt
-    button2 = ch1.getVoltage()/max_volt
+    button1 = (ch0.getVoltage() - 5/2)
+    button2 = (5-ch1.getVoltage() - 5/3)
     # To do: play around with normalization
-    button1 *= ((button1**2)*500)
-    button2 *= ((button2**2)*500)
-    return np.matmul(rot_mat, [(button2)-cm_to_pixel(0), (button1)-cm_to_pixel(0)])
+    button1 *= gain
+    button2 *= gain
+    return np.matmul(rot_mat, [(button1), (button2)])
 
 
 def update_pos(pos, circ):
@@ -77,7 +78,7 @@ def trial_counter(time):
 
 
 # define rotation matrix for integrated cursor
-rot_mat = [[np.cos(np.pi/4), -np.cos(np.pi/4)],
+rot_mat = [[np.cos(np.pi/4), -np.sin(np.pi/4)],
            [np.sin(np.pi/4), np.cos(np.pi/4)]]
 
 # ---------- Main Experiment Run ------------------------------------
