@@ -13,7 +13,7 @@ target_size = 0.3
 home_size = 0.3
 timeLimit = 3
 max_volt = 5
-gain = 200
+gain = 250
 
 
 def cm_to_pixel(cm):
@@ -38,8 +38,8 @@ def config_channel(ch_num, fs):
 
 
 def get_pos(ch0, ch1, rot_mat):
-    button1 = (ch0.getVoltage() - 5/2)
-    button2 = (5-ch1.getVoltage() - 5/3)
+    button1 = (5-ch0.getVoltage() - 5/2)
+    button2 = (5-ch1.getVoltage() - 5/2.5)
     # To do: play around with normalization
     button1 *= gain
     button2 *= gain
