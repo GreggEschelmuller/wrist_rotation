@@ -73,12 +73,14 @@ mywin = visual.Window(fullscr=True, monitor='testMonitor',
                       units='pix', color='black')
 
 
+# Makes cursors and targets
 int_cursor = visual.Circle(
     mywin, radius=cm_to_pixel(cursor_size), fillColor='green')  # integrated pos
 target = visual.Circle(
     mywin, radius=cm_to_pixel(target_size), fillColor='blue')  # initial target
 home = visual.Circle(
     mywin, radius=cm_to_pixel(home_size), lineColor='red')
+
 
 while True:
     update_pos(get_pos(ch0, ch1), int_cursor)
