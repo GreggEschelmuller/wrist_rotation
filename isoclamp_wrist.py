@@ -1,4 +1,3 @@
-
 from psychopy import visual, core, event
 from Phidget22.Phidget import *
 from Phidget22.Devices.VoltageInput import *
@@ -8,6 +7,12 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 
+# ------------------To Do: ------------------
+# 1. make proper calibration
+# 2. make cursor disappear after trial and reappear only when close to home
+# 3. make excel file with parameters and read it in
+# 4. Make practice in excel file
+# 5. Set up window flip to not wait for screen flip
 # ------------------------ Function and constant var set up ---------------------------------------
 
 cursor_size = 0.2
@@ -15,7 +20,7 @@ target_size = 0.3
 home_size = 0.3
 timeLimit = 3
 max_volt = 5
-gain = 250
+gain = 550
 
 
 def cm_to_pixel(cm):
@@ -27,12 +32,12 @@ def pixel_to_cm(pix):
 
 
 def read_trial_data(file_name, sheet=0):
+    # Reads in the trial data from the excel file
     return pd.read_excel(file_name, sheet_name=sheet, engine='openpyxl')
 
 
 def config_channel(ch_num, fs):
     ch = VoltageInput()
-    ch.setDeviceSerialNumber(678135)
     ch.setChannel(ch_num)
     ch.openWaitForAttachment(1000)
     ch.setDataRate(fs)
@@ -40,13 +45,13 @@ def config_channel(ch_num, fs):
 
 
 def get_pos(ch0, ch1, rot_mat):
-    button1 = (5-ch0.getVoltage() - 5/2)
-    button2 = (5-ch1.getVoltage() - 5/2.5)
+    button1 = (5 - ch0.getVoltage() - 2.4)
+    button2 = (ch1.getVoltage() - 2.2)
     # To do: play around with normalization
     button1 *= gain
     button2 *= gain
     # return [button1, button2]
-    return np.matmul(rot_mat, [(button1), (button2)])
+    return (np.matmul(rot_mat, [button1, button2]))
 
 
 def update_pos(pos, circ):
@@ -54,74 +59,77 @@ def update_pos(pos, circ):
     circ.draw()
 
 
-def is_home(circ, rad):
-    return (circ.pos[0] < rad/2 and circ.pos[0] > -rad/2 and circ.pos[1] < rad/2 and circ.pos[1] > -rad/2)
-
-
 def calc_target_pos(angle, amp=8):
+    # Calculates the target position based on the angle and amplitude
+    # To do: make work properly
     magnitude = cm_to_pixel(amp)
-    x = np.cos(angle*(np.pi/180)) * magnitude * -1
+    x = np.cos(angle*(np.pi/180)) * magnitude
     y = np.sin(angle*(np.pi/180)) * magnitude
     return(x, y)
 
 
 def calc_amplitude(pos):
+    # Calculates the amplitude of the cursor
     amp = np.sqrt(np.dot(pos, pos))
     return amp
 
 
-def trial_counter(time=3):
-    current_time = time
-    for i in range(time):
-        counter_stim = visual.TextStim(
-            mywin, text=str(current_time), color='blue')
-        counter_stim.draw()
-        mywin.flip()
-        core.wait(1)
-        current_time -= 1
-
-
 # define rotation matrix for integrated cursor
-rot_mat = [[np.cos(np.pi/4), -np.sin(np.pi/4)],
-           [np.sin(np.pi/4), np.cos(np.pi/4)]]
+
+def make_rot_mat(theta):
+    # Makes a rotation matrix for the integrated cursor
+    return np.array([[np.cos(theta), -np.sin(theta)], [np.sin(theta), np.cos(theta)]])
+
+
+no_rot = make_rot_mat(0)
+
+rot_mat_flipx = [[-1, 0], [0, 1]]
+
+rot_mat_flipy = [[1, 0], [0, -1]]
 
 # ---------- Main Experiment Run ------------------------------------
 # read data from xls file
+
+ch0 = config_channel(2, 100)
+ch1 = config_channel(1, 100)
 trials = read_trial_data('Trials.xlsx', 0)
-# Create your Phidget channels
-ch0 = config_channel(1, 1000)
-ch1 = config_channel(2, 1000)
 
 # Creates window
 mywin = visual.Window(fullscr=True, monitor='testMonitor',
                       units='pix', color='black')
 
+
 int_cursor = visual.Circle(mywin, radius=cm_to_pixel(
     cursor_size), fillColor='white')  # integrated pos
 
-keys = []
-while len(keys) == 0:
-    keys = event.getKeys()
-    current_pos = get_pos(ch0, ch1, rot_mat)
-    update_pos(current_pos, int_cursor)
-    mywin.flip()
-
-
-# Create stimuli
+# Set up variables for data collection
 end_angles = []
 final_positions = []
+move_times = []
+# set up clock
 move_clock = core.Clock()
 
+# start trial loop
 for i in range(len(trials.trial_num)):
+    rot_mat = make_rot_mat(np.radians(trials.rotation[i]))
     int_cursor = visual.Circle(
         mywin, radius=cm_to_pixel(cursor_size), fillColor='white')  # integrated pos
     target = visual.Circle(
-        mywin, radius=cm_to_pixel(target_size), fillColor='red')  # initial target
+        mywin, radius=cm_to_pixel(target_size), fillColor='green')  # initial target
     home = visual.Circle(
-        mywin, radius=cm_to_pixel(home_size), lineColor='red')
-    trial_counter(3)
+        mywin, radius=cm_to_pixel(home_size), lineColor='red')  # home position
 
-    target.fillColor = 'green'
+    # checks if cursor is in home position
+    is_home = False
+    while is_home == False:
+        if home.contains(get_pos(ch0, ch1, no_rot)):
+            is_home = True
+        current_pos = get_pos(ch0, ch1, no_rot)
+        update_pos(current_pos, int_cursor)
+        home.draw()
+        mywin.flip()
+
+    # Sets up target position
     update_pos(calc_target_pos(
         trials.target_pos[i], trials.target_amp[i]), target)
     mywin.flip()
@@ -136,26 +144,25 @@ for i in range(len(trials.trial_num)):
         mywin.flip()
 
         if calc_amplitude(current_pos) > cm_to_pixel(trials.target_amp[i]):
-            move_time = move_clock.getTime()
+            move_times.append(move_clock.getTime())
             final_positions.append(current_pos)
             break
 
     mywin.flip()
 
-# Close the channels once the program is done.
-ch0.close()
-ch1.close()
-
 # ------ Analysis and Saving--------------------
-# To do: update output data to include all trial data
-# Merge input df with output df
-# final_angles = [(np.arctan(final_positions[i][1]/final_positions[i][0])) * (180/np.pi)
-#                 for i in range(len(final_positions))]
-# output_data = pd.DataFrame()
-# output_data['final_positions'] = final_positions
-# output_data['final_angles'] = final_angles
-# output_data['target_positions'] = trials.target_pos
-# output_data['error'] = output_data['target_positions'] - \
-#     output_data['final_angles']
+# To do:
+# 1. Add additional data in output df
 
-# output_data.to_csv('testing_output_data.csv')
+# Writes output data to dataframe and saves as excel
+output_data = pd.DataFrame()
+output_data['final_positions'] = final_positions
+output_data['final_angles'] = [np.degrees((np.arctan2(final_positions[i][1], final_positions[i][0])))
+                               for i in range(len(final_positions))]
+output_data['target_positions'] = trials.target_pos
+output_data['error'] = output_data['target_positions'] - \
+    output_data['final_angles']
+output_data['move_times'] = move_times
+output_data['rotation'] = trials.rotation
+
+output_data.to_excel('testing_output_data.xlsx')
