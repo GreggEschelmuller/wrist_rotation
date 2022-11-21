@@ -4,6 +4,7 @@ from Phidget22.Phidget import *
 from Phidget22.Devices.VoltageInput import *
 import numpy as np
 import pandas as pd
+from funcs import *
 
 
 # ------------------------ Function and constant var set up ---------------------------------------
@@ -13,54 +14,6 @@ target_size = 0.3
 home_size = 0.3
 timeLimit = 3
 max_volt = 5
-gain = 400
-
-
-def cm_to_pixel(cm):
-    return cm * 37.795275591
-
-
-def pixel_to_cm(pix):
-    return pix/37.795275591
-
-
-def read_trial_data(file_name, sheet=0):
-    return pd.read_excel(file_name, sheet_name=sheet)
-
-
-def config_channel(ch_num, fs):
-    ch = VoltageInput()
-    ch.setChannel(ch_num)
-    ch.openWaitForAttachment(1000)
-    ch.setDataRate(fs)
-    return ch
-
-
-def get_pos(ch0, ch1):
-    button1 = (5 - ch0.getVoltage() - 2.4)
-    button2 = (ch1.getVoltage() - 2.2)
-    # To do: play around with normalization
-    button1 *= gain
-    button2 *= gain
-    # return [button1, button2]
-    return [(button1), (button2)]
-
-
-def update_pos(pos, circ):
-    circ.pos = pos
-    circ.draw()
-
-
-def calc_target_pos(angle, amp=8):
-    magnitude = cm_to_pixel(amp)
-    x = np.cos(angle*(np.pi/180)) * magnitude * -1
-    y = np.sin(angle*(np.pi/180)) * magnitude
-    return(x, y)
-
-
-def calc_amplitude(pos):
-    amp = np.sqrt(np.dot(pos, pos))
-    return amp
 
 
 # ---------- Main Experiment Run -------------------------------------------------
