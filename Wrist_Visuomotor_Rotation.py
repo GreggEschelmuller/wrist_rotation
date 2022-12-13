@@ -7,6 +7,8 @@ from datetime import datetime
 
 
 # ------------------To Do: ------------------
+# 1. Save data after each trial
+# Testing git changes
 
 
 
@@ -20,6 +22,9 @@ study_info =  {
     "Date_Time": current_date,
     "Study ID": "Rotation"
 }
+
+with open(file_path + '_studyinfo.pkl', 'wb') as f:
+    pickle.dump(study_info, f)
 
 # ------------------------ constant var set up --------------------------------
 
@@ -101,16 +106,10 @@ target = visual.Circle(
     win, radius=cf.cm_to_pixel(target_size), fillColor='green')  # initial target
 
 print('Done set up')
-print("Press any key to start")
-while True:
-    # stop if button press
-    if len(event.getKeys()) > 0:
-        break
-    event.clearEvents()
-event.clearEvents()
 
 # -------------- start practice trial loop ------------------------------------
-
+print('Starting Practice')
+core.wait(2)
 for i in range(len(practice.trial_num)):
     rot_mat = cf.make_rot_mat(np.radians(practice.rotation[i]))
     home.draw()
@@ -147,15 +146,9 @@ with open(file_path + '_practice.pkl', 'wb') as f:
     pickle.dump(practice_end_data, f)
 print('Practice Data Saved')
 
-print('Press any key to continue to next block')
-while True:
-    # stop if button press
-    if len(event.getKeys()) > 0:
-        break
-    event.clearEvents()
-event.clearEvents()
-
 # -------------- start baseline trial loop ---------------------------------------------
+print('Pratice is over - starting baseline')
+core.wait(2)
 for i in range(len(baseline.trial_num)):
     rot_mat = cf.make_rot_mat(np.radians(baseline.rotation[i]))
     home.draw()
@@ -192,14 +185,9 @@ with open(file_path + '_baseline.pkl', 'wb') as f:
     pickle.dump(baseline_end_data, f)
 print('Baseline Data Saved')
 
-print('Press any key to continue to next block')
-while True:
-    # stop if button press
-    if len(event.getKeys()) > 0:
-        break
-    event.clearEvents()
-event.clearEvents()
 # -------------------- start experimental trial loop -----------------------------------
+print('Baseline done - starting exposure')
+
 for i in range(len(exposure.trial_num)):
     rot_mat = cf.make_rot_mat(np.radians(exposure.rotation[i]))
     home.draw()
@@ -235,14 +223,8 @@ with open(file_path + '_exposure.pkl', 'wb') as f:
     pickle.dump(exposure_end_data, f)
 print('Exposure Data Saved')
 
-print('Press any key to continue to next block')
-while True:
-    # stop if button press
-    if len(event.getKeys()) > 0:
-        break
-    event.clearEvents()
-event.clearEvents()
 # -------------- start post trial loop ---------------------------------------------
+print('Exposure over - starting post')
 for i in range(len(post.trial_num)):
     rot_mat = cf.make_rot_mat(np.radians(post.rotation[i]))
     home.draw()
