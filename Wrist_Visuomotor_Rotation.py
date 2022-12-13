@@ -100,7 +100,7 @@ home = visual.Circle(
     win, radius=cf.cm_to_pixel(home_size), lineColor='red')  # home position
 home_range = visual.Circle(
     win, radius=cf.cm_to_pixel(home_range), lineColor='black')  # home range position
-int_cursor = visual.Circle(
+int_cursor = visual.Circle(    
     win, radius=cf.cm_to_pixel(cursor_size), fillColor='black')  # integrated pos
 target = visual.Circle(
     win, radius=cf.cm_to_pixel(target_size), fillColor='green')  # initial target
