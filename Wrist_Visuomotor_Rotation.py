@@ -95,19 +95,12 @@ home = visual.Circle(
     win, radius=cf.cm_to_pixel(home_size), lineColor='red')  # home position
 home_range = visual.Circle(
     win, radius=cf.cm_to_pixel(home_range), lineColor='black')  # home range position
-int_cursor = visual.Circle(
+int_cursor = visual.Circle(    
     win, radius=cf.cm_to_pixel(cursor_size), fillColor='black')  # integrated pos
 target = visual.Circle(
     win, radius=cf.cm_to_pixel(target_size), fillColor='green')  # initial target
 
 print('Done set up')
-print("Press any key to start")
-while True:
-    # stop if button press
-    if len(event.getKeys()) > 0:
-        break
-    event.clearEvents()
-event.clearEvents()
 
 # -------------- start practice trial loop ------------------------------------
 
@@ -147,14 +140,6 @@ with open(file_path + '_practice.pkl', 'wb') as f:
     pickle.dump(practice_end_data, f)
 print('Practice Data Saved')
 
-print('Press any key to continue to next block')
-while True:
-    # stop if button press
-    if len(event.getKeys()) > 0:
-        break
-    event.clearEvents()
-event.clearEvents()
-
 # -------------- start baseline trial loop ---------------------------------------------
 for i in range(len(baseline.trial_num)):
     rot_mat = cf.make_rot_mat(np.radians(baseline.rotation[i]))
@@ -192,13 +177,6 @@ with open(file_path + '_baseline.pkl', 'wb') as f:
     pickle.dump(baseline_end_data, f)
 print('Baseline Data Saved')
 
-print('Press any key to continue to next block')
-while True:
-    # stop if button press
-    if len(event.getKeys()) > 0:
-        break
-    event.clearEvents()
-event.clearEvents()
 # -------------------- start experimental trial loop -----------------------------------
 for i in range(len(exposure.trial_num)):
     rot_mat = cf.make_rot_mat(np.radians(exposure.rotation[i]))
@@ -235,13 +213,6 @@ with open(file_path + '_exposure.pkl', 'wb') as f:
     pickle.dump(exposure_end_data, f)
 print('Exposure Data Saved')
 
-print('Press any key to continue to next block')
-while True:
-    # stop if button press
-    if len(event.getKeys()) > 0:
-        break
-    event.clearEvents()
-event.clearEvents()
 # -------------- start post trial loop ---------------------------------------------
 for i in range(len(post.trial_num)):
     rot_mat = cf.make_rot_mat(np.radians(post.rotation[i]))
