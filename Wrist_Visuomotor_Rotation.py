@@ -8,7 +8,6 @@ from datetime import datetime
 
 # ------------------To Do: ------------------
 # 1. Save data after each trial
-# Testing git changes
 
 
 
@@ -78,6 +77,23 @@ template_data_dict = {
     "Error": [],
 }
 
+template_trial_dict = {
+    "Curs_y_pos": [],
+    "Curs_x_pos": [],
+    "Wrist_x_pos": [],
+    "Wrist_y_pos": [],
+    "Time": [],
+    "End_Angles": [],
+    "Curs_x_pos": [],
+    "Curs_y_pos": [],
+    "Wrist_x_pos": [],
+    "Wrist_y_pos": [],
+    "Move_Times": [],
+    "Target_pos": [],
+    "Rotation": [],
+    "Error": [],
+}
+
 # Summary end point data dictionaries
 practice_end_data = template_data_dict.copy()
 baseline_end_data = template_data_dict.copy()
@@ -130,12 +146,14 @@ for i in range(len(practice.trial_num)):
     win.flip()
 
     # Run trial
-    practice_trial_data, practice_end_data = cf.run_trial(ch0, ch1, int_cursor, home, win, move_clock, rot_mat, target, practice_end_data, practice_trial_data, practice, i, True)
+    practice_trial_data, practice_end_data, trial_dict = cf.run_trial(ch0, ch1, int_cursor, home, win, move_clock, rot_mat, target, practice_end_data, practice_trial_data, practice, i, True, template_trial_dict)
     
     # Leave current window for 200ms
     core.wait(0.2, hogCPUperiod=0.2)
-    cf.check_esc(win)
     win.flip()
+    with open(file_path + 'practice_trial_' + str(i) + '.pkl', 'wb') as f:
+        pickle.dump(trial_dict, f)
+    del trial_dict
     
 print('Saving Practice Data')
 # Save dict to excel as a backup
@@ -169,12 +187,14 @@ for i in range(len(baseline.trial_num)):
     win.flip()
     
     # Run trial
-    baseline_trial_data, baseline_end_data = cf.run_trial(ch0, ch1, int_cursor, home, win, move_clock, rot_mat, target, baseline_end_data, baseline_trial_data, baseline, i, False)
+    baseline_trial_data, baseline_end_data, trial_dict = cf.run_trial(ch0, ch1, int_cursor, home, win, move_clock, rot_mat, target, baseline_end_data, baseline_trial_data, baseline, i, False, template_trial_dict)
     
     # Leave current window for 200ms
     core.wait(0.2, hogCPUperiod=0.2)
-    cf.check_esc(win)
     win.flip()
+    with open(file_path + 'baseline_trial_' + str(i) + '.pkl', 'wb') as f:
+        pickle.dump(trial_dict, f)
+    del trial_dict
     
 print('Saving Baseline Data')
 # Save dict to excel as a backup
@@ -207,12 +227,14 @@ for i in range(len(exposure.trial_num)):
     cf.update_pos(current_target_pos, target, no_rot)
     win.flip()
     # Run trial
-    exposure_trial_data, exposure_end_data = cf.run_trial(ch0, ch1, int_cursor, home, win, move_clock, rot_mat, target, exposure_end_data, exposure_trial_data, baseline, i, True)
+    exposure_trial_data, exposure_end_data, trial_dict = cf.run_trial(ch0, ch1, int_cursor, home, win, move_clock, rot_mat, target, exposure_end_data, exposure_trial_data, baseline, i, True, template_trial_dict)
     
     # Leave current window for 200ms
     core.wait(0.2, hogCPUperiod=0.2)
-    cf.check_esc(win)
     win.flip()
+    with open(file_path + 'exposure_trial_' + str(i) + '.pkl', 'wb') as f:
+        pickle.dump(trial_dict, f)
+    del trial_dict
 
 print('Saving Exposure Data')
 # Save dict to excel as a backup
@@ -244,12 +266,14 @@ for i in range(len(post.trial_num)):
     cf.update_pos(current_target_pos, target, no_rot)
     win.flip()
     # Run trial
-    post_trial_data, post_end_data = cf.run_trial(ch0, ch1, int_cursor, home, win, move_clock, rot_mat, target, post_end_data, post_trial_data, baseline, i, False)
+    post_trial_data, post_end_data, trial_dict = cf.run_trial(ch0, ch1, int_cursor, home, win, move_clock, rot_mat, target, post_end_data, post_trial_data, baseline, i, False, template_trial_dict)
     
     # Leave current window for 200ms
     core.wait(0.2, hogCPUperiod=0.2)
-    cf.check_esc(win)
     win.flip()
+    with open(file_path + 'post_trial_' + str(i) + '.pkl', 'wb') as f:
+        pickle.dump(trial_dict, f)
+    del trial_dict
     
 print('Saving Post Data')
 # Save dict to excel as a backup
