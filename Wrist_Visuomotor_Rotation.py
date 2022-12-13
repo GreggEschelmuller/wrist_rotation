@@ -130,39 +130,12 @@ for i in range(len(practice.trial_num)):
     cf.update_pos(current_target_pos, target, no_rot)
     win.flip()
 
-    # Waits to continue until cursor leaves home position
-    while home.contains(cf.get_pos(ch0, ch1)):
-        current_pos = cf.get_pos(ch0, ch1)
-        cf.update_pos(current_pos, int_cursor, rot_mat)
-        home.draw()
-        target.draw()
-        win.flip()
-        cf.check_esc(win)
-        continue
-
-    # run trial until time limit is reached or target is reached
-    move_clock.reset()
-    # Save wrist and cursor position data for whole trial
-    while move_clock.getTime() <= timeLimit:
-        # Run trial
-        current_pos = cf.get_pos(ch0, ch1)
-        cf.update_pos(current_pos, int_cursor, rot_mat)
-        target.draw()
-        win.flip()
-        practice_trial_data = cf.save_position_data(practice_trial_data, int_cursor, current_pos, move_clock)
-        core.wait(1/1000, hogCPUperiod=1/1000) # waits for 1 ms. This is to avoid storing huge amounts of data, but will not effect cursor movement - may have to play around with
-        
-
-        if cf.calc_amplitude(current_pos) > cf.cm_to_pixel(practice.target_amp[i]):
-            # Append trial data to storage variables
-            practice_end_data = cf.save_trial_data(practice_end_data, move_clock, current_pos, int_cursor, practice, i)
-            print('Trial #: ' + str(i+1) + "\nMove time: " +
-                  str(move_clock.getTime()))
-
-            # Leave current window for 200ms
-            core.wait(0.2, hogCPUperiod=0.2)
-            break
-        cf.check_esc(win)
+    # Run trial
+    practice_trial_data, practice_end_data = cf.run_trial(ch0, ch1, int_cursor, home, win, move_clock, rot_mat, target, practice_end_data, practice_trial_data, practice, i, True)
+    
+    # Leave current window for 200ms
+    core.wait(0.2, hogCPUperiod=0.2)
+    cf.check_esc(win)
     win.flip()
     
 print('Saving Practice Data')
@@ -201,39 +174,13 @@ for i in range(len(baseline.trial_num)):
         baseline.target_pos[i], baseline.target_amp[i])
     cf.update_pos(current_target_pos, target, no_rot)
     win.flip()
-
-    # Leaves cursor white until leaving home
-    while home.contains(cf.get_pos(ch0, ch1, rot_mat)):
-        current_pos = cf.get_pos(ch0, ch1, rot_mat)
-        cf.update_pos(current_pos, int_cursor)
-        home.draw()
-        target.draw()
-        win.flip()
-        cf.check_esc(win)
-        continue
-
-    int_cursor.color = 'black'
-    current_pos = cf.get_pos(ch0, ch1, rot_mat)
-    cf.update_pos(current_pos, int_cursor)
-
-    move_clock.reset()
-    while move_clock.getTime() <= timeLimit:
-        # Run trial
-        current_pos = cf.get_pos(ch0, ch1, rot_mat)
-        cf.update_pos(current_pos, int_cursor)
-        target.draw()
-        win.flip()
-        baseline_trial_data = cf.save_position_data(baseline_trial_data, int_cursor, current_pos, move_clock)
-        core.wait(1/1000, hogCPUperiod=1/1000) # waits for 1 ms. This is to avoid storing huge amounts of data, but will not effect cursor movement - may have to play around with
-        if cf.calc_amplitude(current_pos) > cf.cm_to_pixel(baseline.target_amp[i]):
-            # Append trial data to storage variables
-            baseline_end_data = cf.save_trial_data(baseline_end_data, move_clock, current_pos, int_cursor, baseline, i)
-            print('Trial #: ' + str(i) + "\nMove time: " +
-                  str(move_clock.getTime()))
-            # Leave current window for 200ms
-            core.wait(0.2, hogCPUperiod=0.2)
-            break
-        cf.check_esc(win)
+    
+    # Run trial
+    baseline_trial_data, baseline_end_data = cf.run_trial(ch0, ch1, int_cursor, home, win, move_clock, rot_mat, target, baseline_end_data, baseline_trial_data, baseline, i, False)
+    
+    # Leave current window for 200ms
+    core.wait(0.2, hogCPUperiod=0.2)
+    cf.check_esc(win)
     win.flip()
     
 print('Saving Baseline Data')
@@ -271,39 +218,12 @@ for i in range(len(exposure.trial_num)):
         exposure.target_pos[i], exposure.target_amp[i])
     cf.update_pos(current_target_pos, target, no_rot)
     win.flip()
-
-    # Leaves cursor white until leaving home
-    while home.contains(cf.get_pos(ch0, ch1, rot_mat)):
-        current_pos = cf.get_pos(ch0, ch1, rot_mat)
-        cf.update_pos(current_pos, int_cursor)
-        home.draw()
-        target.draw()
-        win.flip()
-        cf.check_esc(win)
-        continue
-
-    current_pos = cf.get_pos(ch0, ch1, rot_mat)
-    cf.update_pos(current_pos, int_cursor)
-
-    move_clock.reset()
-    while move_clock.getTime() <= timeLimit:
-        # Run trial
-        current_pos = cf.get_pos(ch0, ch1, rot_mat)
-        cf.update_pos(current_pos, int_cursor)
-        target.draw()
-        win.flip()
-        exposure_trial_data = cf.save_position_data(exposure_trial_data, int_cursor, current_pos, move_clock)
-        core.wait(1/1000, hogCPUperiod=1/1000) # waits for 1 ms. This is to avoid storing huge amounts of data, but will not effect cursor movement - may have to play around with
-
-        if cf.calc_amplitude(current_pos) > cf.cm_to_pixel(exposure.target_amp[i]):
-            # Append trial data to storage variables
-            exposure_end_data = cf.save_trial_data(exposure_end_data, move_clock, current_pos, int_cursor, exposure, i)
-            print('Trial #: ' + str(i) + "\nMove time: " +
-                  str(move_clock.getTime()))
-            # Leave current window for 200ms
-            core.wait(0.2, hogCPUperiod=0.2)
-            break
-        cf.check_esc(win)
+    # Run trial
+    exposure_trial_data, exposure_end_data = cf.run_trial(ch0, ch1, int_cursor, home, win, move_clock, rot_mat, target, exposure_end_data, exposure_trial_data, baseline, i, True)
+    
+    # Leave current window for 200ms
+    core.wait(0.2, hogCPUperiod=0.2)
+    cf.check_esc(win)
     win.flip()
 
 print('Saving Exposure Data')
@@ -341,39 +261,12 @@ for i in range(len(post.trial_num)):
         post.target_pos[i], post.target_amp[i])
     cf.update_pos(current_target_pos, target, no_rot)
     win.flip()
-
-    # Leaves cursor white until leaving home
-    while home.contains(cf.get_pos(ch0, ch1, rot_mat)):
-        current_pos = cf.get_pos(ch0, ch1, rot_mat)
-        cf.update_pos(current_pos, int_cursor)
-        home.draw()
-        target.draw()
-        win.flip()
-        cf.check_esc(win)
-        continue
-    int_cursor.color = 'black'
-    current_pos = cf.get_pos(ch0, ch1, rot_mat)
-    cf.update_pos(current_pos, int_cursor)
-
-    move_clock.reset()
-    while move_clock.getTime() <= timeLimit:
-        # Run trial
-        current_pos = cf.get_pos(ch0, ch1, rot_mat)
-        cf.update_pos(current_pos, int_cursor)
-        target.draw()
-        win.flip()
-        post_trial_data = cf.save_position_data(post_trial_data, int_cursor, current_pos, move_clock)
-        core.wait(1/1000, hogCPUperiod=1/1000) # waits for 1 ms. This is to avoid storing huge amounts of data, but will not effect cursor movement - may have to play around with
-
-        if cf.calc_amplitude(current_pos) > cf.cm_to_pixel(post.target_amp[i]):
-            # Append trial data to storage variables
-            post_end_data = cf.save_trial_data(post_end_data, move_clock, current_pos, int_cursor, post, i)
-            print('Trial #: ' + str(i) + "\nMove time: " +
-                  str(move_clock.getTime()))
-            # Leave current window for 200ms
-            core.wait(0.2, hogCPUperiod=0.2)
-            break
-        cf.check_esc(win)
+    # Run trial
+    post_trial_data, post_end_data = cf.run_trial(ch0, ch1, int_cursor, home, win, move_clock, rot_mat, target, post_end_data, post_trial_data, baseline, i, False)
+    
+    # Leave current window for 200ms
+    core.wait(0.2, hogCPUperiod=0.2)
+    cf.check_esc(win)
     win.flip()
     
 print('Saving Post Data')

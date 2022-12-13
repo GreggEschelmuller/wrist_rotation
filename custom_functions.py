@@ -137,3 +137,39 @@ def save_position_data(data_dict, int_cursor, current_pos, move_clock):
     data_dict['Wrist_y_pos'] = current_pos[1]
     data_dict['Time'] = move_clock.get_time()
     return data_dict
+
+
+def run_trial(ch0, ch1, int_cursor, home, win, move_clock, rot_mat, target, end_data, trial_data, condition, trial_num, feedback=True):
+    timeLimit = 3
+    # Waits to continue until cursor leaves home position
+    while home.contains(get_pos(ch0, ch1)):
+        current_pos = get_pos(ch0, ch1)
+        update_pos(current_pos, int_cursor, rot_mat)
+        home.draw()
+        target.draw()
+        win.flip()
+        check_esc(win)
+        continue
+
+    if not feedback:
+        int_cursor.color = 'black'
+
+    # run trial until time limit is reached or target is reached
+    move_clock.reset()
+    # Save wrist and cursor position data for whole trial
+    while move_clock.getTime() <= timeLimit:
+        # Run trial
+        current_pos = get_pos(ch0, ch1)
+        update_pos(current_pos, int_cursor, rot_mat)
+        target.draw()
+        win.flip()
+        trial_data = save_position_data(trial_data, int_cursor, current_pos, move_clock)
+        core.wait(1/1000, hogCPUperiod=1/1000) # waits for 1 ms. This is to avoid storing huge amounts of data, but will not effect cursor movement - may have to play around with
+        
+
+        if calc_amplitude(current_pos) > cm_to_pixel(condition.target_amp[trial_num]):
+            # Append trial data to storage variables
+            end_data = save_trial_data(end_data, move_clock, current_pos, int_cursor, condition, trial_num)
+            break
+        
+    return trial_data, end_data
