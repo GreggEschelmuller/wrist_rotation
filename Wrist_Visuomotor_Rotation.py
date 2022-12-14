@@ -15,7 +15,7 @@ print('Setting everything up...')
 participant = 99
 file_path = "Data/P" + str(participant) + "/participant_" + str(participant)
 current_date = datetime.now()
-study_info =  {
+study_info = {
     "Participant": participant,
     "Date_Time": current_date,
     "Study ID": "Rotation"
@@ -53,7 +53,7 @@ post = cf.read_trial_data('Trials.xlsx', 'Post')
 
 # Creates window
 win = visual.Window(fullscr=True, monitor='testMonitor',
-                      units='pix', color='black', waitBlanking=False, screen=1, size=[1920, 1080])
+                    units='pix', color='black', waitBlanking=False, screen=1, size=[1920, 1080])
 
 # Create dictionaries to store data
 position_data_template = {
@@ -110,10 +110,10 @@ home_clock = core.Clock()
 
 # set up stimuli
 home = visual.Circle(
-    win, radius=cf.cm_to_pixel(home_size), lineColor='red')  # home position
+    win, radius=cf.cm_to_pixel(home_size), lineColor='red', fillColor='black')  # home position
 home_range = visual.Circle(
     win, radius=cf.cm_to_pixel(home_range), lineColor='black')  # home range position
-int_cursor = visual.Circle(    
+int_cursor = visual.Circle(
     win, radius=cf.cm_to_pixel(cursor_size), fillColor='black')  # integrated pos
 target = visual.Circle(
     win, radius=cf.cm_to_pixel(target_size), fillColor='green')  # initial target
@@ -143,21 +143,23 @@ for i in range(len(practice.trial_num)):
     win.flip()
 
     # Run trial
-    practice_trial_data, practice_end_data, trial_dict = cf.run_trial(ch0, ch1, int_cursor, home, win, move_clock, rot_mat, target, practice_end_data, practice_trial_data, practice, i, True, template_trial_dict)
-    
+    practice_trial_data, practice_end_data, trial_dict = cf.run_trial(
+        ch0, ch1, int_cursor, home, win, move_clock, rot_mat, target, practice_end_data, practice_trial_data, practice, i, True, template_trial_dict)
+
     # Leave current window for 200ms
     core.wait(0.2, hogCPUperiod=0.2)
     win.flip()
 
-    # Save current trial as pkl 
+    # Save current trial as pkl
     with open(file_path + '_practice_trial_' + str(i) + '.pkl', 'wb') as f:
         pickle.dump(trial_dict, f)
     del trial_dict
-    
+
 print('Saving Practice Data')
 # Save dict to excel as a backup
 practice_output = pd.DataFrame.from_dict(practice_end_data)
-practice_output['error'] = practice_output['Target_pos'] - practice_output['End_Angles']
+practice_output['error'] = practice_output['Target_pos'] - \
+    practice_output['End_Angles']
 practice_output.to_excel(file_path + "_practice.xlsx")
 # Save dict to pickel
 with open(file_path + '_practice.pkl', 'wb') as f:
@@ -185,10 +187,11 @@ for i in range(len(baseline.trial_num)):
         baseline.target_pos[i], baseline.target_amp[i])
     cf.update_pos(current_target_pos, target, no_rot)
     win.flip()
-    
+
     # Run trial
-    baseline_trial_data, baseline_end_data, trial_dict = cf.run_trial(ch0, ch1, int_cursor, home, win, move_clock, rot_mat, target, baseline_end_data, baseline_trial_data, baseline, i, False, template_trial_dict)
-    
+    baseline_trial_data, baseline_end_data, trial_dict = cf.run_trial(
+        ch0, ch1, int_cursor, home, win, move_clock, rot_mat, target, baseline_end_data, baseline_trial_data, baseline, i, False, template_trial_dict)
+
     # Leave current window for 200ms
     core.wait(0.2, hogCPUperiod=0.2)
     win.flip()
@@ -197,11 +200,12 @@ for i in range(len(baseline.trial_num)):
     with open(file_path + '_baseline_trial_' + str(i) + '.pkl', 'wb') as f:
         pickle.dump(trial_dict, f)
     del trial_dict
-    
+
 print('Saving Baseline Data')
 # Save dict to excel as a backup
 baseline_output = pd.DataFrame.from_dict(baseline_end_data)
-baseline_output['error'] = baseline_output['Target_pos'] - baseline_output['End_Angles']
+baseline_output['error'] = baseline_output['Target_pos'] - \
+    baseline_output['End_Angles']
 baseline_output.to_excel(file_path + "_baseline.xlsx")
 # Save dict to pickel
 with open(file_path + '_baseline.pkl', 'wb') as f:
@@ -231,8 +235,9 @@ for i in range(len(exposure.trial_num)):
     win.flip()
 
     # Run trial
-    exposure_trial_data, exposure_end_data, trial_dict = cf.run_trial(ch0, ch1, int_cursor, home, win, move_clock, rot_mat, target, exposure_end_data, exposure_trial_data, exposure, i, True, template_trial_dict)
-    
+    exposure_trial_data, exposure_end_data, trial_dict = cf.run_trial(
+        ch0, ch1, int_cursor, home, win, move_clock, rot_mat, target, exposure_end_data, exposure_trial_data, exposure, i, True, template_trial_dict)
+
     # Leave current window for 200ms
     core.wait(0.2, hogCPUperiod=0.2)
     win.flip()
@@ -245,7 +250,8 @@ for i in range(len(exposure.trial_num)):
 print('Saving Exposure Data')
 # Save dict to excel as a backup
 exposure_output = pd.DataFrame.from_dict(exposure_end_data)
-exposure_output['error'] = exposure_output['Target_pos'] - exposure_output['End_Angles']
+exposure_output['error'] = exposure_output['Target_pos'] - \
+    exposure_output['End_Angles']
 exposure_output.to_excel(file_path + "_exposure.xlsx")
 # Save dict to pickel
 with open(file_path + '_exposure.pkl', 'wb') as f:
@@ -274,8 +280,9 @@ for i in range(len(post.trial_num)):
     win.flip()
 
     # Run trial
-    post_trial_data, post_end_data, trial_dict = cf.run_trial(ch0, ch1, int_cursor, home, win, move_clock, rot_mat, target, post_end_data, post_trial_data, baseline, i, False, template_trial_dict)
-    
+    post_trial_data, post_end_data, trial_dict = cf.run_trial(
+        ch0, ch1, int_cursor, home, win, move_clock, rot_mat, target, post_end_data, post_trial_data, baseline, i, False, template_trial_dict)
+
     # Leave current window for 200ms
     core.wait(0.2, hogCPUperiod=0.2)
     win.flip()
@@ -284,7 +291,7 @@ for i in range(len(post.trial_num)):
     with open(file_path + '_post_trial_' + str(i) + '.pkl', 'wb') as f:
         pickle.dump(trial_dict, f)
     del trial_dict
-    
+
 print('Saving Post Data')
 # Save dict to excel as a backup
 post_output = pd.DataFrame.from_dict(post_end_data)

@@ -103,8 +103,8 @@ def check_home(int_cursor, home, ch0, ch1, rot_mat, home_clock, win):
             home_clock.reset()
             while True:
                 current_pos = get_pos(ch0, ch1)
-                update_pos(current_pos, int_cursor, rot_mat)
                 home.draw()
+                update_pos(current_pos, int_cursor, rot_mat)
                 win.flip()
                 
                 if home_clock.getTime() > 0.5:
@@ -113,8 +113,8 @@ def check_home(int_cursor, home, ch0, ch1, rot_mat, home_clock, win):
                 if not home.contains(get_pos(ch0, ch1)):
                     break
         current_pos = get_pos(ch0, ch1)
-        update_pos(current_pos, int_cursor, rot_mat)
         home.draw()
+        update_pos(current_pos, int_cursor, rot_mat)
         win.flip()
         
 
@@ -144,8 +144,8 @@ def run_trial(ch0, ch1, int_cursor, home, win, move_clock, rot_mat, target, end_
     # Waits to continue until cursor leaves home position
     while home.contains(get_pos(ch0, ch1)):
         current_pos = get_pos(ch0, ch1)
-        update_pos(current_pos, int_cursor, rot_mat)
         home.draw()
+        update_pos(current_pos, int_cursor, rot_mat)
         target.draw()
         win.flip()
         
@@ -159,9 +159,9 @@ def run_trial(ch0, ch1, int_cursor, home, win, move_clock, rot_mat, target, end_
     # Save wrist and cursor position data for whole trial
     while move_clock.getTime() <= timeLimit:
         # Run trial
+        target.draw()
         current_pos = get_pos(ch0, ch1)
         update_pos(current_pos, int_cursor, rot_mat)
-        target.draw()
         win.flip()
         trial_data = save_position_data(trial_data, int_cursor, current_pos, move_clock)
         current_trial = save_position_data(current_trial, int_cursor, current_pos, move_clock)
