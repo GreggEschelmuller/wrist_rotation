@@ -81,22 +81,22 @@ def make_rot_mat(theta):
                      [np.sin(theta), np.cos(theta)]])
 
 
-def check_home_range(ch0, ch1, rot_mat, int_cursor, home_range, home, mywin):
+def check_home_range(ch0, ch1, rot_mat, int_cursor, home_range, home, win):
     in_range = False
     while not in_range:
         if home_range.contains(get_pos(ch0, ch1)):
             in_range = True
             int_cursor.color = 'white'
             int_cursor.draw()
-            mywin.flip()
+            win.flip()
         current_pos = get_pos(ch0, ch1)
         update_pos(current_pos, int_cursor, rot_mat)
         home.draw()
-        mywin.flip()
-        check_esc(mywin)
+        win.flip()
+        
 
 
-def check_home(int_cursor, home, ch0, ch1, rot_mat, home_clock, mywin):
+def check_home(int_cursor, home, ch0, ch1, rot_mat, home_clock, win):
     is_home = False
     while not is_home:
         if home.contains(get_pos(ch0, ch1)):
@@ -105,8 +105,8 @@ def check_home(int_cursor, home, ch0, ch1, rot_mat, home_clock, mywin):
                 current_pos = get_pos(ch0, ch1)
                 update_pos(current_pos, int_cursor, rot_mat)
                 home.draw()
-                mywin.flip()
-                check_esc(mywin)
+                win.flip()
+                
                 if home_clock.getTime() > 0.5:
                     is_home = True
                     break
@@ -115,19 +115,18 @@ def check_home(int_cursor, home, ch0, ch1, rot_mat, home_clock, mywin):
         current_pos = get_pos(ch0, ch1)
         update_pos(current_pos, int_cursor, rot_mat)
         home.draw()
-        mywin.flip()
-        check_esc(mywin)
+        win.flip()
+        
 
-def save_trial_data(data_dict, move_clock, current_pos, int_cursor, condition, i):
+def save_trial_data(data_dict, move_clock, current_pos, int_cursor, condition, t_num):
     data_dict['Move_Times'].append(move_clock.getTime())
-    data_dict['Wrist_x_pos'].append(current_pos[0])
-    data_dict['Wrist_y_pos'].append(current_pos[1])
-    data_dict['Curs_x_pos'].append(int_cursor.pos[0])
-    data_dict['Curs_y_pos'].append(int_cursor.pos[1])
-    data_dict['Target_pos'].append(condition.target_pos[i])
-    data_dict['Rotation'].append(condition.rotation[i])
+    data_dict['Wrist_x_end'].append(current_pos[0])
+    data_dict['Wrist_y_end'].append(current_pos[1])
+    data_dict['Curs_x_end'].append(int_cursor.pos[0])
+    data_dict['Curs_y_end'].append(int_cursor.pos[1])
+    data_dict['Target_pos'].append(condition.target_pos[t_num])
+    data_dict['Rotation'].append(condition.rotation[t_num])
     data_dict['End_Angles'].append(np.degrees(np.arctan2(int_cursor.pos[1], int_cursor.pos[0])))
-    data_dict['Error'].append(data_dict['Target_pos'][i] - data_dict['End_Angles'][i])
     return data_dict
 
 def save_position_data(data_dict, int_cursor, current_pos, move_clock):
@@ -139,7 +138,7 @@ def save_position_data(data_dict, int_cursor, current_pos, move_clock):
     return data_dict
 
 
-def run_trial(ch0, ch1, int_cursor, home, win, move_clock, rot_mat, target, end_data, trial_data, condition, trial_num, feedback, trial_dict):
+def run_trial(ch0, ch1, int_cursor, home, win, move_clock, rot_mat, target, end_data, trial_data, condition, t_num, feedback, trial_dict):
     timeLimit = 3
     current_trial = trial_dict.copy()
     # Waits to continue until cursor leaves home position
@@ -149,7 +148,7 @@ def run_trial(ch0, ch1, int_cursor, home, win, move_clock, rot_mat, target, end_
         home.draw()
         target.draw()
         win.flip()
-        check_esc(win)
+        
         continue
 
     if not feedback:
@@ -169,10 +168,10 @@ def run_trial(ch0, ch1, int_cursor, home, win, move_clock, rot_mat, target, end_
         core.wait(1/1000, hogCPUperiod=1/1000) # waits for 1 ms. This is to avoid storing huge amounts of data, but will not effect cursor movement - may have to play around with
         
 
-        if calc_amplitude(current_pos) > cm_to_pixel(condition.target_amp[trial_num]):
+        if calc_amplitude(current_pos) > cm_to_pixel(condition.target_amp[t_num]):
             # Append trial data to storage variables
-            end_data = save_trial_data(end_data, move_clock, current_pos, int_cursor, condition, trial_num)
-            current_trial = save_trial_data(current_trial, move_clock, current_pos, int_cursor, condition, trial_num)
+            end_data = save_trial_data(end_data, move_clock, current_pos, int_cursor, condition, t_num)
+            current_trial = save_trial_data(current_trial, move_clock, current_pos, int_cursor, condition, t_num)
             break
     
     return trial_data, end_data, trial_dict
