@@ -9,36 +9,42 @@ from datetime import datetime
 # ------------------To Do: ------------------
 # 1. Save data after each trial
 
-
-# ------------------------ Participant and file path --------------------------
-print('Setting everything up...')
+# ----------- Participant info ----------------
 participant = 99
-file_path = "Data/P" + str(participant) + "/participant_" + str(participant)
+participant_age = 22
+study_id = "Wrist Visuomotor Rotation"
+experimenter = "Gregg"
 current_date = datetime.now()
+
 study_info = {
-    "Participant": participant,
+    "Participant ID": participant,
+    "Participant age": participant_age,
     "Date_Time": current_date,
-    "Study ID": "Rotation"
+    "Study ID": study_id,
+    "Experimenter": experimenter
 }
+
+print(study_info)
+input("Make sure changed the participant info is correct before continuing. \n Press enter to continue.")
+
+# set up file path
+file_path = "Data/P" + str(participant) + "/participant_" + str(participant)
 
 with open(file_path + '_studyinfo.pkl', 'wb') as f:
     pickle.dump(study_info, f)
 
-# ------------------------ constant var set up --------------------------------
+print('Setting everything up...')
 
-cursor_size = 0.2
-target_size = 0.3
-home_size = 0.3
+# ------------------------ Set up --------------------------------
+
+# Variables set up
+cursor_size = 0.1
+target_size = 0.1
+home_size = 0.15
 home_range = home_size * 10.0
-timeLimit = 3
-max_volt = 5
-gain = 550
-
 
 # 0 deg rotation matrix
 no_rot = cf.make_rot_mat(0)
-
-# ---------- Main Experiment Run ------------------------------------
 
 # Create your Phidget channels
 ch0 = cf.config_channel(2, 100)
@@ -50,12 +56,12 @@ baseline = cf.read_trial_data("Trials.xlsx", "Baseline")
 exposure = cf.read_trial_data('Trials.xlsx', 'Trials')
 post = cf.read_trial_data('Trials.xlsx', 'Post')
 
-
 # Creates window
 win = visual.Window(fullscr=True, monitor='testMonitor',
                     units='pix', color='black', waitBlanking=False, screen=1, size=[1920, 1080])
 
 # Create dictionaries to store data
+# Template for all continuous trial data
 position_data_template = {
     "Curs_y_pos": [],
     "Curs_x_pos": [],
@@ -64,6 +70,7 @@ position_data_template = {
     "Time": [],
 }
 
+# Dictionary for end point data
 template_data_dict = {
     "End_Angles": [],
     "Curs_x_end": [],
@@ -75,6 +82,7 @@ template_data_dict = {
     "Rotation": [],
 }
 
+# Template to store data for each trial
 template_trial_dict = {
     "Curs_y_end": [],
     "Curs_x_end": [],
@@ -104,7 +112,7 @@ exposure_trial_data = position_data_template.copy()
 post_trial_data = position_data_template.copy()
 
 
-# set up clock
+# set up clocks
 move_clock = core.Clock()
 home_clock = core.Clock()
 
@@ -121,8 +129,8 @@ target = visual.Circle(
 print('Done set up')
 
 # -------------- start practice trial loop ------------------------------------
-print('Starting Practice')
-core.wait(2)
+input("Press enter to continue to practice ... ")
+
 for i in range(len(practice.trial_num)):
     rot_mat = cf.make_rot_mat(np.radians(practice.rotation[i]))
     home.draw()
@@ -167,8 +175,8 @@ with open(file_path + '_practice.pkl', 'wb') as f:
 print('Practice Data Saved')
 
 # -------------- start baseline trial loop ---------------------------------------------
-print('Pratice is over - starting baseline')
-core.wait(2)
+input("Press enter to continue to baseline ... ")
+
 for i in range(len(baseline.trial_num)):
     rot_mat = cf.make_rot_mat(np.radians(baseline.rotation[i]))
     home.draw()
@@ -213,8 +221,8 @@ with open(file_path + '_baseline.pkl', 'wb') as f:
 print('Baseline Data Saved')
 
 # -------------------- start experimental trial loop -----------------------------------
-print('Baseline done - starting exposure')
-core.wait(2)
+input("Press enter to continue to exposure ... ")
+
 for i in range(len(exposure.trial_num)):
     rot_mat = cf.make_rot_mat(np.radians(exposure.rotation[i]))
     home.draw()
@@ -259,7 +267,8 @@ with open(file_path + '_exposure.pkl', 'wb') as f:
 print('Exposure Data Saved')
 
 # -------------- start post trial loop ---------------------------------------------
-print('Exposure over - starting post')
+input("Press enter to continue to post ... ")
+
 for i in range(len(post.trial_num)):
     rot_mat = cf.make_rot_mat(np.radians(post.rotation[i]))
     home.draw()

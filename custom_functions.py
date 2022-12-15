@@ -10,15 +10,6 @@ import psychopy.core as core
 import psychopy.event as event
 
 
-def check_esc(win):
-    keys = event.getKeys()
-    if keys in keys[0] == 'Esc':
-        win.close()
-        core.quit()
-    else:
-        return None
-
-
 # 24 inch diag - resololution 1920x1080
 # PPI = diagnol in inches
 def cm_to_pixel(cm):
