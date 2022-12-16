@@ -8,6 +8,7 @@ import pandas as pd
 from Phidget22.Devices.VoltageInput import *
 import psychopy.core as core
 import psychopy.event as event
+import copy
 
 
 # 24 inch diag - resololution 1920x1080
