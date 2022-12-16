@@ -7,7 +7,8 @@ from datetime import datetime
 
 
 # ------------------To Do: ------------------
-# 1. Save data after each trial
+# 1. Try out event handlers in phidgets API
+
 
 # ----------- Participant info ----------------
 participant = 99
