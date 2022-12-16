@@ -150,9 +150,9 @@ def run_trial(ch0, ch1, int_cursor, home, win, move_clock, rot_mat, target, end_
     # Save wrist and cursor position data for whole trial
     while move_clock.getTime() <= timeLimit:
         # Run trial
-        target.draw()
         current_pos = get_pos(ch0, ch1)
         update_pos(current_pos, int_cursor, rot_mat)
+        target.draw()
         win.flip()
         trial_data = save_position_data(trial_data, int_cursor, current_pos, move_clock)
         current_trial = save_position_data(current_trial, int_cursor, current_pos, move_clock)

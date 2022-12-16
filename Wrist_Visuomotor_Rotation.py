@@ -11,8 +11,8 @@ from datetime import datetime
 
 
 # ----------- Participant info ----------------
-participant = 99
-participant_age = 22
+participant = 98
+participant_age = 28
 study_id = "Wrist Visuomotor Rotation"
 experimenter = "Gregg"
 current_date = datetime.now()
@@ -180,8 +180,8 @@ input("Press enter to continue to baseline ... ")
 
 for i in range(len(baseline.trial_num)):
     rot_mat = cf.make_rot_mat(np.radians(baseline.rotation[i]))
-    home.draw()
     int_cursor.color = 'black'
+    home.draw()
     int_cursor.draw()
     win.flip()
 
