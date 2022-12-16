@@ -131,7 +131,7 @@ def save_position_data(data_dict, int_cursor, current_pos, move_clock):
 
 def run_trial(ch0, ch1, int_cursor, home, win, move_clock, rot_mat, target, end_data, trial_data, condition, t_num, feedback, trial_dict):
     timeLimit = 3
-    current_trial = trial_dict.copy()
+    current_trial = copy.deepcopy(trial_dict)
     # Waits to continue until cursor leaves home position
     while home.contains(get_pos(ch0, ch1)):
         current_pos = get_pos(ch0, ch1)
@@ -165,4 +165,4 @@ def run_trial(ch0, ch1, int_cursor, home, win, move_clock, rot_mat, target, end_
             current_trial = save_trial_data(current_trial, move_clock, current_pos, int_cursor, condition, t_num)
             break
     
-    return trial_data, end_data, trial_dict
+    return trial_data, end_data, current_trial

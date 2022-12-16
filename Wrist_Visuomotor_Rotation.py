@@ -4,6 +4,7 @@ import pandas as pd
 import custom_functions as cf
 import pickle
 from datetime import datetime
+import copy
 
 
 # ------------------To Do: ------------------
@@ -101,16 +102,16 @@ template_trial_dict = {
 }
 
 # Summary end point data dictionaries
-practice_end_data = template_data_dict.copy()
-baseline_end_data = template_data_dict.copy()
-exposure_end_data = template_data_dict.copy()
-post_end_data = template_data_dict.copy()
+practice_end_data = copy.deepcopy(template_data_dict)
+baseline_end_data = copy.deepcopy(template_data_dict)
+exposure_end_data = copy.deepcopy(template_data_dict)
+post_end_data = copy.deepcopy(template_data_dict)
 
 # Continuous data per trial data dictionaries
-practice_trial_data = position_data_template.copy()
-baseline_trial_data = position_data_template.copy()
-exposure_trial_data = position_data_template.copy()
-post_trial_data = position_data_template.copy()
+practice_trial_data = copy.deepcopy(position_data_template)
+baseline_trial_data = copy.deepcopy(position_data_template)
+exposure_trial_data = copy.deepcopy(position_data_template)
+post_trial_data = copy.deepcopy(position_data_template)
 
 
 # set up clocks
