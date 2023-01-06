@@ -9,6 +9,7 @@ from Phidget22.Devices.VoltageInput import *
 import psychopy.core as core
 import psychopy.event as event
 import copy
+import nidaqmx
 
 
 # 24 inch diag - resololution 1920x1080
@@ -27,6 +28,13 @@ def read_trial_data(file_name, sheet=0):
 
 
 def config_channel(ch_num, fs):
+    ch = nidaqmx.Task()
+    ch.ai_channels.add_ai_voltage_chan("Dev1/ai" + str(ch_num), min_val=0, max_val=5)
+    ch.timing.cfg_samp_clk_timing(fs)
+    ch.start()
+    return ch
+
+def config_channel_phidget(ch_num, fs):
     ch = VoltageInput()
     ch.setChannel(ch_num)
     ch.openWaitForAttachment(1000)
@@ -39,6 +47,14 @@ def make_rot_mat(theta):
                      [np.sin(theta), np.cos(theta)]])
 
 def get_pos(ch0, ch1):
+    chan1 = (5 - ch0.read() - 2.4)
+    chan2 = (ch1.read() - 2.2)
+    # To do: play around with normalization
+    chan1 *= 550
+    chan2 *= 550
+    return chan1, chan2
+
+def get_pos_phidget(ch0, ch1):
     chan1 = (5 - ch0.getVoltage() - 2.4)
     chan2 = (ch1.getVoltage() - 2.2)
     # To do: play around with normalization
