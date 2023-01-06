@@ -12,7 +12,7 @@ import copy
 
 
 # ----------- Participant info ----------------
-participant = 98
+participant = 97
 participant_age = 28
 study_id = "Wrist Visuomotor Rotation"
 experimenter = "Gregg"
@@ -30,7 +30,7 @@ print(study_info)
 input("Make sure changed the participant info is correct before continuing. \n Press enter to continue.")
 
 # set up file path
-file_path = "Data/P" + str(participant) + "/participant_" + str(participant)
+file_path = "data/P" + str(participant) + "/participant_" + str(participant)
 
 with open(file_path + '_studyinfo.pkl', 'wb') as f:
     pickle.dump(study_info, f)
@@ -48,9 +48,8 @@ home_range = home_size * 10.0
 # 0 deg rotation matrix
 no_rot = cf.make_rot_mat(0)
 
-# Create your Phidget channels
-ch0 = cf.config_channel(2, 100)
-ch1 = cf.config_channel(1, 100)
+# Create your NI channels
+task = cf.config_channel(0, 1, 500)
 
 # Read data from xls file
 practice = cf.read_trial_data('Trials.xlsx', 'Practice')
@@ -141,10 +140,10 @@ for i in range(len(practice.trial_num)):
     win.flip()
 
     # Checks if cursor is close to home and turns cursor white
-    cf.check_home_range(ch0, ch1, no_rot, int_cursor, home_range, home, win)
+    cf.check_home_range(task, no_rot, int_cursor, home_range, home, win)
 
     # checks if cursor is in home position
-    cf.check_home(int_cursor, home, ch0, ch1, no_rot, home_clock, win)
+    cf.check_home(int_cursor, home, task, no_rot, home_clock, win)
 
     # Sets up target position
     current_target_pos = cf.calc_target_pos(
@@ -154,7 +153,7 @@ for i in range(len(practice.trial_num)):
 
     # Run trial
     practice_trial_data, practice_end_data, trial_dict = cf.run_trial(
-        ch0, ch1, int_cursor, home, win, move_clock, rot_mat, target, practice_end_data, practice_trial_data, practice, i, True, template_trial_dict)
+        task, int_cursor, home, win, move_clock, rot_mat, target, practice_end_data, practice_trial_data, practice, i, True, template_trial_dict)
 
     # Leave current window for 200ms
     core.wait(0.2, hogCPUperiod=0.2)
@@ -187,10 +186,10 @@ for i in range(len(baseline.trial_num)):
     win.flip()
 
     # Checks if cursor is close to home and turns cursor white
-    cf.check_home_range(ch0, ch1, no_rot, int_cursor, home_range, home, win)
+    cf.check_home_range(task, no_rot, int_cursor, home_range, home, win)
 
     # checks if cursor is in home position
-    cf.check_home(int_cursor, home, ch0, ch1, no_rot, home_clock, win)
+    cf.check_home(int_cursor, home, task, no_rot, home_clock, win)
 
     # Sets up target position
     current_target_pos = cf.calc_target_pos(
@@ -200,7 +199,7 @@ for i in range(len(baseline.trial_num)):
 
     # Run trial
     baseline_trial_data, baseline_end_data, trial_dict = cf.run_trial(
-        ch0, ch1, int_cursor, home, win, move_clock, rot_mat, target, baseline_end_data, baseline_trial_data, baseline, i, False, template_trial_dict)
+        task, int_cursor, home, win, move_clock, rot_mat, target, baseline_end_data, baseline_trial_data, baseline, i, False, template_trial_dict)
 
     # Leave current window for 200ms
     core.wait(0.2, hogCPUperiod=0.2)
@@ -233,10 +232,10 @@ for i in range(len(exposure.trial_num)):
     win.flip()
 
     # Checks if cursor is close to home and turns cursor white
-    cf.check_home_range(ch0, ch1, no_rot, int_cursor, home_range, home, win)
+    cf.check_home_range(task, no_rot, int_cursor, home_range, home, win)
 
     # checks if cursor is in home position
-    cf.check_home(int_cursor, home, ch0, ch1, no_rot, home_clock, win)
+    cf.check_home(int_cursor, home, task, no_rot, home_clock, win)
 
     # Sets up target position
     current_target_pos = cf.calc_target_pos(
@@ -246,7 +245,7 @@ for i in range(len(exposure.trial_num)):
 
     # Run trial
     exposure_trial_data, exposure_end_data, trial_dict = cf.run_trial(
-        ch0, ch1, int_cursor, home, win, move_clock, rot_mat, target, exposure_end_data, exposure_trial_data, exposure, i, True, template_trial_dict)
+        task, int_cursor, home, win, move_clock, rot_mat, target, exposure_end_data, exposure_trial_data, exposure, i, True, template_trial_dict)
 
     # Leave current window for 200ms
     core.wait(0.2, hogCPUperiod=0.2)
@@ -279,10 +278,10 @@ for i in range(len(post.trial_num)):
     win.flip()
 
     # Checks if cursor is close to home and turns cursor white
-    cf.check_home_range(ch0, ch1, no_rot, int_cursor, home_range, home, win)
+    cf.check_home_range(task, no_rot, int_cursor, home_range, home, win)
 
     # checks if cursor is in home position
-    cf.check_home(int_cursor, home, ch0, ch1, no_rot, home_clock, win)
+    cf.check_home(int_cursor, home, task, no_rot, home_clock, win)
 
     # Sets up target position
     current_target_pos = cf.calc_target_pos(
@@ -292,7 +291,7 @@ for i in range(len(post.trial_num)):
 
     # Run trial
     post_trial_data, post_end_data, trial_dict = cf.run_trial(
-        ch0, ch1, int_cursor, home, win, move_clock, rot_mat, target, post_end_data, post_trial_data, baseline, i, False, template_trial_dict)
+        task, int_cursor, home, win, move_clock, rot_mat, target, post_end_data, post_trial_data, baseline, i, False, template_trial_dict)
 
     # Leave current window for 200ms
     core.wait(0.2, hogCPUperiod=0.2)
@@ -314,8 +313,8 @@ with open(file_path + '_post.pkl', 'wb') as f:
 print('Post Data Saved')
 
 
-ch0.close()
-ch1.close()
+task.stop()
+task.close()
 # ------ Analysis and Saving-----------------------------------------------------------------
 print("Saving all data")
 all_data = {"Practice_Summary": practice_end_data,
