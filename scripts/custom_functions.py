@@ -144,7 +144,7 @@ def run_trial(ch0, ch1, int_cursor, home, win, move_clock, rot_mat, target, end_
         continue
 
     if not feedback:
-        int_cursor.color = 'black'
+        int_cursor.color = None
 
     # run trial until time limit is reached or target is reached
     move_clock.reset()
